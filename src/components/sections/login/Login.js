@@ -22,8 +22,19 @@ export default function Login() {
             setLoading(true)
             await login(emailRef.current.value, passRef.current.value)
             history.push("/")
-        } catch {
-            setError('Failed to sign in')
+        } catch (error) {
+            if (error.code == "auth/user-not-found") {
+                setError('User not found')
+            }
+            else if (error.code == "auth/wrong-password") {
+                setError('Wrong password')
+            }
+            else {
+                setError('Failed to log in')
+            }
+            
+            console.log(error)
+
         }
         setLoading(false)
     }

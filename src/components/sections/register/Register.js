@@ -1,14 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { useAuth } from "../../../Contexts/AuthContext";
-import { Form, Alert, Button } from "react-bootstrap";
+import React, { useRef, useState } from 'react'
+import { useAuth } from "../../../Contexts/AuthContext"
+import { Form, Alert, Button } from "react-bootstrap"
 
-import { Link, useHistory } from 'react-router-dom';
-import logo from '../../../assets/images/icon/logo.png';
+import { Link, useHistory } from 'react-router-dom'
+import logo from '../../../assets/images/icon/logo.png'
 
 export default function Register() {
 
         const emailRef = useRef()
-        const userRef = useRef()
+        const nameRef = useRef()
         const passRef = useRef()
         const passConfirmRef = useRef()
         const { signup } = useAuth()
@@ -27,9 +27,20 @@ export default function Register() {
                 setError('')
                 setLoading(true)
                 await signup(emailRef.current.value, passRef.current.value)
+                
                 history.push("/")
-            } catch {
-                setError('Failed to create an account')
+            } catch (error) {
+                if (error.code == "auth/email-already-in-use") {
+                    setError('Email already in use')
+                }
+                else if (error.code == "auth/weak-password") {
+                    setError('Password min-lenght : 6')
+                }
+                else {
+                    setError('Failed to log in')
+                }
+
+                console.log(error)
             }
             setLoading(false)
         }
@@ -48,6 +59,10 @@ export default function Register() {
                         {error && <Alert variant="danger">{error}</Alert>}
                         <div className="login-form">
                             <Form onSubmit={handleSubmit}>
+                                <Form.Group id="name">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control className="au-input au-input--full" type="text" ref={nameRef} required />
+                                </Form.Group>
                                 <Form.Group id="email">
                                     <Form.Label>Email Address</Form.Label>
                                     <Form.Control className="au-input au-input--full" type="email" ref={emailRef} required />

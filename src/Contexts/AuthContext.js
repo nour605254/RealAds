@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import UpdateProfile from '../components/pages/UpdateProfile';
 import {auth} from "../firebase"
 
 const AuthContext = React.createContext()
@@ -17,7 +18,7 @@ export function AuthProvider({ children }) {
 
     function login(email, password) {
         return auth.signInWithEmailAndPassword(email, password)
-    }
+    }   
 
     function logout() {
         return auth.signOut()
@@ -33,6 +34,16 @@ export function AuthProvider({ children }) {
 
     function updatePassword(password) {
         return currentUser.updatePassword(password)
+    }
+
+    function updateProfile(name) {
+        return currentUser.updateProfile({
+            displayName: name
+        })
+    }
+
+    function sendEmailVerification(email, password) {
+        return currentUser.sendEmailVerification()
     }
 
     useEffect(() => {
@@ -51,7 +62,9 @@ export function AuthProvider({ children }) {
         logout,
         resetPassword,
         updateEmail,
-        updatePassword
+        updatePassword,
+        updateProfile,
+        sendEmailVerification
     }
         return (
 

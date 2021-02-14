@@ -167,7 +167,7 @@ function AccountDropdown(props) {
                 </div>
                 <div className="content">
                     <h5 className="name">
-                        <a href="#">john doe</a>
+                        <a href="#">{currentUser.displayName}</a>
                     </h5>
                     <span className="email">{currentUser.email}</span>
                 </div>
