@@ -36,16 +36,6 @@ export function AuthProvider({ children }) {
         return currentUser.updatePassword(password)
     }
 
-    function updateProfile(name) {
-        return currentUser.updateProfile({
-            displayName: name
-        })
-    }
-
-    function sendEmailVerification(email, password) {
-        return currentUser.sendEmailVerification()
-    }
-
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
@@ -63,8 +53,6 @@ export function AuthProvider({ children }) {
         resetPassword,
         updateEmail,
         updatePassword,
-        updateProfile,
-        sendEmailVerification
     }
         return (
 
