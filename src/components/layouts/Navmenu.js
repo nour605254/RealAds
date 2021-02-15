@@ -5,128 +5,113 @@ import $ from 'jquery';
 
 import logo from '../../assets/images/icon/logo.png';
 
-const navigationmenu = [
-    {
-        id: 1,
-        link: '/',
-        linkText: 'Dashboard',
-        icon: 'fas fa-tachometer-alt',
-        child: false,
-    },
-    {
-        id: 2,
-        linkText: 'Ads',
-        icon: 'fas fa-desktop',
-        child: true,
-        submenu: [
-            {
-                id: 21,
-                link: '/ads/add',
-                linkText: 'Add'
-            },
-            {
-                id: 22,
-                link: '/ads/show',
-                linkText: 'Sow'
-            },
-        ]
-    },
-    {
-        id: 3,
-        linkText: 'Events',
-        child: true,
-        icon: 'fas fa-calendar-alt',
-        submenu: [
-            {
-                id: 31,
-                link: '/event/add',
-                linkText: 'Add'
-            },
-            {
-                id: 31,
-                link: '/event/show',
-                linkText: 'Sow'
-            },
-
-        ]
-    },
-    {
-        id: 4,
-        linkText: 'Users',
-        icon: 'far fa-check-square',
-        child: true,
-        submenu: [
-            {
-                id: 41,
-                link: '/user/add',
-                linkText: 'Add'
-            },
-            {
-                id: 42,
-                link: '/user/show',
-                linkText: 'Show'
-            },
-        ]
-    },
-];
 
 class Navmenu extends Component {
 
-    getNextSibling = function (elem, selector) {
-        // Get the next sibling element
-        var sibling = elem.nextElementSibling;
-        // If there's no selector, return the first sibling
-        if (!selector) return sibling;
-        // If the sibling matches our selector, use it
-        // If not, jump to the next sibling and continue the loop
-        while (sibling) {
-            if (sibling.matches(selector)) return sibling;
-            sibling = sibling.nextElementSibling
-        }
-    }
-    triggerChild = (e) => {
-        let subMenu = '';
-        subMenu = (this.getNextSibling(e.target, '.navbar__sub-list') !== undefined) ? this.getNextSibling(e.target, '.navbar__sub-list') : null;
-        if (subMenu !== null && subMenu !== undefined && subMenu !== '') {
-            subMenu.classList = subMenu.classList.contains('d-block') ? 'navbar__sub-list' : 'navbar__sub-list d-block';
-        }
-    }
-    
 
     render() {
         return (
-            <aside className="menu-sidebar d-none d-lg-block">
-                <div className="logo">
+            <aside class="menu-sidebar d-none d-lg-block">
+                <div class="logo">
                     <a href="#">
                         <img src={ logo } alt="Cool Admin" />
                     </a>
                 </div>
-                <div className="menu-sidebar__content js-scrollbar1">
-                    <nav className="navbar-sidebar">
-                        <ul className="list-unstyled navbar__list">
-                            {navigationmenu.length > 0 ? navigationmenu.map((item, i) => (
-                                <li key={i} className={`${item.child ? 'has-sub' : ''} `} onClick={this.triggerChild}>
-                                    {item.child ? <Link onClick={e => e.preventDefault()} to="/"> <i class={item.icon}></i> {item.linkText} </Link> : <Link to={item.link}> <i class={item.icon}></i> {item.linkText} </Link>}
-                                    {item.child ?
-                                        <ul className="list-unstyled navbar__sub-list js-sub-list" role="menu">
-                                            {item.submenu.map((sub_item, i) => (
-                                                <li key={i} className={`${sub_item.child ? 'has-sub' : ''} `}>
-                                                    {sub_item.child ? <Link onClick={e => e.preventDefault()} to="/"> {sub_item.linkText} </Link> : <Link to={sub_item.link}> {sub_item.linkText} </Link>}
-                                                    {sub_item.submenu ?
-                                                        <ul className="list-unstyled navbar__sub-list js-sub-list">
-                                                            {sub_item.submenu.map((third_item, i) => (
-                                                                <li key={i}><Link
-                                                                    to={third_item.link}>{third_item.linkText}</Link>
-                                                                </li>
-                                                            ))}
-                                                        </ul> : null}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        : null
-                                    }
-                                </li>
-                            )) : null}
+                <div class="menu-sidebar__content js-scrollbar1">
+                    <nav class="navbar-sidebar">
+                        <ul class="list-unstyled navbar__list">
+                            <li class="active has-sub">
+                                <a class="js-arrow" href="#">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                                <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                    <li>
+                                        <a href="index.html">Dashboard 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="index2.html">Dashboard 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="index3.html">Dashboard 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="index4.html">Dashboard 4</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="chart.html">
+                                    <i class="fas fa-chart-bar"></i>Charts</a>
+                            </li>
+                            <li>
+                                <a href="table.html">
+                                    <i class="fas fa-table"></i>Tables</a>
+                            </li>
+                            <li>
+                                <a href="form.html">
+                                    <i class="far fa-check-square"></i>Forms</a>
+                            </li>
+                            <li>
+                                <a href="calendar.html">
+                                    <i class="fas fa-calendar-alt"></i>Calendar</a>
+                            </li>
+                            <li>
+                                <a href="map.html">
+                                    <i class="fas fa-map-marker-alt"></i>Maps</a>
+                            </li>
+                            <li class="has-sub">
+                                <a class="js-arrow" href="#">
+                                    <i class="fas fa-copy"></i>Pages</a>
+                                <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                    <li>
+                                        <a href="login.html">Login</a>
+                                    </li>
+                                    <li>
+                                        <a href="register.html">Register</a>
+                                    </li>
+                                    <li>
+                                        <a href="forget-pass.html">Forget Password</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-sub">
+                                <a class="js-arrow" href="#">
+                                    <i class="fas fa-desktop"></i>UI Elements</a>
+                                <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                    <li>
+                                        <a href="button.html">Button</a>
+                                    </li>
+                                    <li>
+                                        <a href="badge.html">Badges</a>
+                                    </li>
+                                    <li>
+                                        <a href="tab.html">Tabs</a>
+                                    </li>
+                                    <li>
+                                        <a href="card.html">Cards</a>
+                                    </li>
+                                    <li>
+                                        <a href="alert.html">Alerts</a>
+                                    </li>
+                                    <li>
+                                        <a href="progress-bar.html">Progress Bars</a>
+                                    </li>
+                                    <li>
+                                        <a href="modal.html">Modals</a>
+                                    </li>
+                                    <li>
+                                        <a href="switch.html">Switchs</a>
+                                    </li>
+                                    <li>
+                                        <a href="grid.html">Grids</a>
+                                    </li>
+                                    <li>
+                                        <a href="fontawesome.html">Fontawesome Icon</a>
+                                    </li>
+                                    <li>
+                                        <a href="typo.html">Typography</a>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </nav>
                 </div>

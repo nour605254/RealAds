@@ -61,7 +61,7 @@ class Overview extends Component {
     }
     render() {
         return (
-
+            <>
             <div className="row m-t-25">
                 <div className="col-sm-6 col-lg-3">
                     <div className="overview-item overview-item--c1">
@@ -292,10 +292,8 @@ class Overview extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
-
-
-
+                </div>
+            </>
         );
     }
 }
