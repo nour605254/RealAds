@@ -1,32 +1,49 @@
-import React, { useState } from 'react'
-//import Client from '../../layouts/Client'
-import User from './User'
-import Event from './Event'
-import Ads from './Ads'
-import Overview from './Overview'
 import jQuery from 'jquery'
-import { useAuth } from "../../../Contexts/AuthContext";
-import { Link, useHistory } from 'react-router-dom';
 
-export default function Content() {
+async function handleLogout(setError, logout, history) {
 
-    const [error, setError] = useState("")
-    const { logout, currentUser } = useAuth()
-    const history = useHistory()
+    try {
+        setError('')
 
-    async function handleLogout() {
-
-        try {
-            setError('')
-
-            await logout()
-            history.push("/login")
-        } catch {
-            setError('Failed to log out')
-        }
-
+        await logout()
+        history.push("/login")
+    } catch {
+        setError('Failed to log out')
     }
 
+}
+
+export function main(setError, logout, history) {
+   /* (function ($) {
+        // USE STRICT
+        "use strict";
+        var navbars = ['header', 'aside'];
+        var hrefSelector = 'a:not([target="_blank"]):not([href^="#"]):not([class^="chosen-single"])';
+        var linkElement = navbars.map(element => element + ' ' + hrefSelector).join(', ');
+        $(".animsition").animsition({
+            inClass: 'fade-in',
+            outClass: 'fade-out',
+            inDuration: 900,
+            outDuration: 900,
+            linkElement: linkElement,
+            loading: true,
+            loadingParentElement: 'html',
+            loadingClass: 'page-loader',
+            loadingInner: '<div class="page-loader__spin"></div>',
+            timeout: false,
+            timeoutCountdown: 5000,
+            onLoadEvent: true,
+            browser: ['animation-duration', '-webkit-animation-duration'],
+            overlay: false,
+            overlayClass: 'animsition-overlay-slide',
+            overlayParentElement: 'html',
+            transition: function (url) {
+                window.location.href = url;
+            }
+        });
+
+
+    })(jQuery);*/
     (function ($) {
         // USE STRICT
         "use strict";
@@ -58,7 +75,7 @@ export default function Content() {
             });
             $(".account-dropdown__footer").click(function (event) {
                 console.log("ok")
-                handleLogout()
+                handleLogout(setError, logout, history)
             });
             $("body,html").on("click", function () {
                 for (var i = 0; i < menu.length; i++) {
@@ -156,21 +173,25 @@ export default function Content() {
         }
 
     })(jQuery);
+}
 
+export function updateEvent() {
 
-        return (
-            
-                <div class="main-content">
-                    <div class="section__content section__content--p30">
-                        <div class="container-fluid">
+    (function ($) {
+        // USE STRICT
+        "use strict";
 
-                            <Overview />
-                            <Event />
-                           
-                        </div>
-                    </div>
-                </div>
-            
-            
-        );
+        // Load more
+        try {
+
+            $(".updateEvent").click(function (event) {
+                console.log("ok")
+            });
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    })(jQuery);
+
 }
