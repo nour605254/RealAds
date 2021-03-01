@@ -64,101 +64,70 @@ export default function Register() {
         img src = { logo }
         alt = "CoolAdmin" / >
         <
-        /a> <
-        /div> {
+        /a> </div > {
             error && < Alert variant = "danger" > { error } < /Alert>} <
-                div className = "login-form" >
-                <
-                Form onSubmit = { handleSubmit } >
-                <
-                Form.Group id = "name" >
-                <
-                Form.Label > Name < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            div className = "login-form" >
+            <
+            Form onSubmit = { handleSubmit } >
+            <
+            Form.Group id = "name" >
+            <
+            Form.Label > Name < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "text"
             ref = { nameRef }
             required / >
-                <
-                /Form.Group> <
-                Form.Group id = "lastName" >
-                <
-                Form.Label > LastName < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            <
+            /Form.Group> <
+            Form.Group id = "lastName" >
+            <
+            Form.Label > LastName < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "text"
             ref = { lastNameRef }
             required / >
-                <
-                /Form.Group> <
-                Form.Group id = "numtel" >
-                <
-                Form.Label > numtel < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            <
+            /Form.Group> <Form.Group id="numtel" > <
+            Form.Label > numtel < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "text"
             ref = { numTelRef }
             required / >
-                <
-                /Form.Group> <
-                Form.Group id = "role" >
-                <
-                Form.Label > role < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
-            type = "text"
+            <
+            /Form.Group> <Form.Group id="role" > <
+            Form.Label > role < /Form.Label> <select
+
             ref = { roleRef }
-            required / >
-                <
-                /Form.Group> <
-                Form.Group id = "email" >
-                <
-                Form.Label > Email Address < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            required > < option value = "ADMIN" > Admin < /option><option value="client">Client</option >
+            <
+            /select> <
+            /Form.Group> <Form.Group id="email" > <
+            Form.Label > Email Address < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "email"
             ref = { emailRef }
             required / >
-                <
-                /Form.Group> <
-                Form.Group id = "password" >
-                <
-                Form.Label > Password < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            <
+            /Form.Group> <Form.Group id="password" > <
+            Form.Label > Password < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "password"
             ref = { passRef }
             required / >
-                <
-                /Form.Group> <
-                Form.Group id = "password-confirm" >
-                <
-                Form.Label > Password Confirmation < /Form.Label> <
-                Form.Control className = "au-input au-input--full"
+            <
+            /Form.Group> <Form.Group id="password-confirm" > <
+            Form.Label > Password Confirmation < /Form.Label> <Form.Control className="au-input au-input--full"
             type = "password"
             ref = { passConfirmRef }
             required / >
-                <
-                /Form.Group> <
-                Button disabled = { loading }
+            <
+            /Form.Group> <Button disabled={loading}
             className = "au-btn au-btn--block au-btn--blue m-b-20"
-            type = "submit" > register < /Button> <
-                div class = "social-login-content" >
-                <
-                div class = "social-button" >
-                <
-                Button className = "au-btn au-btn--block au-btn--blue m-b-20" > register with facebook < /Button> <
-                Button className = "au-btn au-btn--block au-btn--blue m-b-20" > register with twitter < /Button> <
-                /div> <
-                /div> <
-                /Form> <
-                div className = "register-link" >
-                <
-                p >
-                Already have account ?
-                <
-                Link to = "/login" > Log In < /Link> <
-                /p> <
-                /div> <
-                /div> <
-                /div> <
-                /div> <
-                /div> <
-                /div>
+            type = "submit" > register < /Button> <div class="social-login-content" > <
+            div class = "social-button" >
+            <
+            Button className = "au-btn au-btn--block au-btn--blue m-b-20" > register with facebook < /Button> <
+            Button className = "au-btn au-btn--block au-btn--blue m-b-20" > register with twitter < /Button> <
+            /div > </div > < /Form > <div className="register-link" > <
+            p >
+            Already have account ?
+            <
+            Link to = "/login" > Log In < /Link> </p > < /div> </div > < /div> </div > < /div> </div >
 
             <
             /div>
