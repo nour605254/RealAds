@@ -1,77 +1,91 @@
-import React, { Component, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
+import ReactApexChart from "react-apexcharts";
 
-class Ads extends Component {
-    render() {
+import app from '../../../firebase'
+
+export default function Ads () {
+    const [ads, setAds] = useState([])
+
+    useEffect(() => {
+        const fetchAdsAct = async () => {
+            const db = app.firestore()
+            const data = await db.collection("Ads").get()
+            setAds(data.docs.map(doc => ({ Owner: doc.data().Proprietaire, View: doc.data().Vues, Touched: doc.data().Touche, Active: doc.data().Active, id: doc.id })))
+        }
+        fetchAdsAct()
+    }, [])
+
+    let ad = []
+
+    ads.forEach(doc => {
+        let dupData = 0
+        let index = 0
+        for (var i = 0; i < ad.length; i++) {
+            
+            if (ad[i].name == doc.Owner) {
+                dupData = 1
+                index = i
+            }
+        }
+
+        if (dupData == 1) {
+            ad[index].data.push([doc.View, doc.Touched, doc.Touched])
+        }
+        else {
+            ad.push(
+                {
+                    name: doc.Owner,
+                    data: [[doc.View, doc.Touched, doc.Touched]]
+                }
+            )
+        }
+
+    })
+    console.log(ad)
+
+    let state = {
+
+            series: ad,
+            options: {
+                chart: {
+                    height: 350,
+                    type: 'bubble',
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                fill: {
+                    opacity: 0.8
+                },
+                xaxis: {
+                    tickAmount: 12,
+                    type: 'category',
+                },
+                yaxis: {
+                    
+                }
+            },
+
+
+        };
+
         return (
 
-             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="au-card recent-report">
-                                        <div class="au-card-inner">
-                                            <h3 class="title-2">Ads Reports</h3>
-                                            <div class="chart-info">
-                                                <div class="chart-info__left">
-                                                    <div class="chart-note">
-                                                        <span class="dot dot--blue"></span>
-                                                        <span>products</span>
-                                                    </div>
-                                                    <div class="chart-note mr-0">
-                                                        <span class="dot dot--green"></span>
-                                                        <span>services</span>
-                                                    </div>
-                                                </div>
-                                                <div class="chart-info__right">
-                                                    <div class="chart-statis">
-                                                        <span class="index incre">
-                                                            <i class="zmdi zmdi-long-arrow-up"></i>25%
-                                                    </span>
-                                                        <span class="label">products</span>
-                                                    </div>
-                                                    <div class="chart-statis mr-0">
-                                                        <span class="index decre">
-                                                            <i class="zmdi zmdi-long-arrow-down"></i>10%
-                                                    </span>
-                                                        <span class="label">services</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="recent-report__chart">
-                                                <canvas id="recent-rep-chart"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="au-card chart-percent-card">
-                                        <div class="au-card-inner">
-                                            <h3 class="title-2 tm-b-5">Ads by %</h3>
-                                            <div class="row no-gutters">
-                                                <div class="col-xl-6">
-                                                    <div class="chart-note-wrap">
-                                                        <div class="chart-note mr-0 d-block">
-                                                            <span class="dot dot--blue"></span>
-                                                            <span>products</span>
-                                                        </div>
-                                                        <div class="chart-note mr-0 d-block">
-                                                            <span class="dot dot--red"></span>
-                                                            <span>services</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="percent-chart">
-                                                        <canvas id="percent-chart"></canvas>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+            <div class="row" >
+                <div  style={{ width: "100%" }}>
+                    <div class="au-card recent-report">
+                        <div class="au-card-inner" >
+                            <h3 class="title-2">Ads Reports</h3>
+                            <div class="chart-info">
                             </div>
+                            <div class="recent-report__chart" >
+                                <ReactApexChart options={state.options} series={state.series} type="bubble" height={350} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
         );
-    }
 }
-
-export default Ads;

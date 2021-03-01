@@ -165,7 +165,7 @@ export default function Event() {
             labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
             datasets: [
                 {
-                    label: 'My First dataset',
+                    label: 'Actives Events',
                     backgroundColor: brandService,
                     borderColor: 'transparent',
                     pointHoverBackgroundColor: '#fff',
@@ -174,7 +174,7 @@ export default function Event() {
 
                 },
                 {
-                    label: 'My Second dataset',
+                    label: 'Inactives Events',
                     backgroundColor: brandProduct,
                     borderColor: 'transparent',
                     pointHoverBackgroundColor: '#fff',
@@ -188,11 +188,32 @@ export default function Event() {
 
     const totalEvents = events.length + Ievents.length
     const Iaverage = (Ievents.length/totalEvents)*100
-    const average = (events.length/totalEvents)*100
+    const average = (events.length / totalEvents) * 100
+    let arrow = ""
+    let arrowClass = ""
+    let Iarrow = ""
+    let IarrowClass = ""
+
+    if (average > 50) {
+        arrow = "zmdi zmdi-long-arrow-up"
+        arrowClass = "index incre"
+    } else {
+        arrow = "zmdi zmdi-long-arrow-down"
+        arrowClass = "index decre"
+    }
+
+    if (Iaverage > 50) {
+        Iarrow = "zmdi zmdi-long-arrow-up"
+        IarrowClass = "index incre"
+    } else {
+        Iarrow = "zmdi zmdi-long-arrow-down"
+        IarrowClass = "index decre"
+    }
+    
         return (
 
             <div class="row">
-                <div class="col-lg-6">
+                <div style={{ width: "100%" }}>
                     <div class="au-card recent-report">
                         <div class="au-card-inner">
                             <h3 class="title-2">Events Reports</h3>
@@ -209,14 +230,14 @@ export default function Event() {
                                 </div>
                                 <div class="chart-info__right">
                                     <div class="chart-statis">
-                                        <span class="index incre">
-                                            <i class="zmdi zmdi-long-arrow-up"></i>{average.toFixed(2)}%
+                                        <span class={ arrowClass }>
+                                            <i class={ arrow }></i>{average.toFixed(2)}%
                                                     </span>
                                         <span class="label">actives</span>
                                     </div>
                                     <div class="chart-statis mr-0">
-                                        <span class="index decre">
-                                            <i class="zmdi zmdi-long-arrow-down"></i>{Iaverage.toFixed(2) }%
+                                        <span class={ IarrowClass }>
+                                            <i class={ Iarrow }></i>{Iaverage.toFixed(2) }%
                                                     </span>
                                         <span class="label">inactives</span>
                                     </div>

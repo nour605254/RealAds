@@ -16,15 +16,17 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import app from '../../../firebase'
 
-export default function Events() {
+import { useAuth } from "../../../Contexts/AuthContext";
 
+export default function Events() {
+    const { currentUser } = useAuth()
     const [events, setEvents] = useState([])
     const categoryRef = useRef()
 
     useEffect(() => {
         const fetchEvent = async () => {
             const db = app.firestore()
-            const data = await db.collection("Events").get()
+            const data = await db.collection("Events").where('User', '==', currentUser.uid).get()
 
             let temp = []
             
@@ -39,8 +41,8 @@ export default function Events() {
                 }
             )
             
-
-            const doc = db.collection('Events');
+            
+            const doc = db.collection('Events').where('User', '==', currentUser.uid);
             
             doc.onSnapshot(querySnapshot => {
                 querySnapshot.docChanges().forEach(change => {

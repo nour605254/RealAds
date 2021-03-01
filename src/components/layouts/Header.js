@@ -1,14 +1,17 @@
-﻿import React, {  useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert } from "react-bootstrap";
 import { useAuth } from "../../Contexts/AuthContext";
 
 import profile from '../../assets/images/icon/avatar-06.jpg';
+import app from '../../firebase'
 
 
 export default function Header() {  
     const [error, setError] = useState("")
     const { currentUser } = useAuth()
+
+    //console.log(currentUser)
 
     return (
 
@@ -142,7 +145,7 @@ export default function Header() {
                                             <img src={profile} alt="John Doe" />
                                         </div>
                                         <div className="content">
-                                            <a className="js-acc-btn" href="#">john doe</a>
+                                            <a className="js-acc-btn" href="#">{currentUser.displayName}</a>
                                         </div>
                                         <div className="account-dropdown js-dropdown">
                                             <div className="info clearfix">
@@ -153,15 +156,15 @@ export default function Header() {
                                                 </div>
                                                 <div className="content">
                                                     <h5 className="name">
-                                                        <a href="#">john doe</a>
+                                                        <a href="#">{currentUser.displayName}</a>
                                                     </h5>
                                                     <span className="email">{currentUser.email}</span>
                                                 </div>
                                             </div>
                                             <div className="account-dropdown__body">
                                                 <div className="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i className="zmdi zmdi-account"></i>Account</a>
+                                                    <Link to="/profile">
+                                                        <i className="zmdi zmdi-account"></i>Account</Link>
                                                 </div>
                                                 <div className="account-dropdown__item">
                                                     <a href="#">

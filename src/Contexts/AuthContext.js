@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import UpdateProfile from '../components/pages/UpdateProfile';
-import {auth} from "../firebase"
+import { auth } from "../firebase"
+import firebase from "firebase"
 
 const AuthContext = React.createContext()
 
@@ -36,6 +37,28 @@ export function AuthProvider({ children }) {
         return currentUser.updatePassword(password)
     }
 
+    function deleteUser() {
+        return currentUser.delete()
+
+    }
+    function updatePhone(phone) {
+        // 'recaptcha-container' is the ID of an element in the DOM.
+        var applicationVerifier = new firebase.auth.RecaptchaVerifier(
+            'recaptcha-container');
+        var provider = new firebase.auth.PhoneAuthProvider();
+        provider.verifyPhoneNumber(phone, applicationVerifier)
+            .then(function (verificationId) {
+                var verificationCode = window.prompt('Please enter the verification ' +
+                    'code that was sent to your mobile device.');
+                firebase.auth.PhoneAuthProvider.credential(verificationId,
+                    verificationCode);
+            })
+            .then(function (phoneCredential) {
+                console.log(currentUser)
+                return currentUser.updatePhoneNumber(phoneCredential);
+            });
+    }
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
@@ -53,6 +76,8 @@ export function AuthProvider({ children }) {
         resetPassword,
         updateEmail,
         updatePassword,
+        updatePhone,
+        deleteUser
     }
         return (
 

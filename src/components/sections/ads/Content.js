@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
-//import Client from '../../layouts/Client'
-import User from './User'
-import Event from './Event'
+
 import Ads from './Ads'
-import Overview from './Overview'
 import jQuery from 'jquery'
 import { useAuth } from "../../../Contexts/AuthContext";
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 export default function Content() {
 
@@ -164,9 +161,7 @@ export default function Content() {
                     <div class="section__content section__content--p30">
                         <div class="container-fluid">
 
-                            <Overview />
                             <Ads />
-                            <Event />
                            
                         </div>
                     </div>

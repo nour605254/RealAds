@@ -6,14 +6,24 @@ import app from '../../../firebase'
 export default function Overview() {
 
     const [events, setEvents] = useState([])
+    const [ads, setAds] = useState([])
 
     useEffect(() => {
-        const fetchCategory = async () => {
+        const fetchEventsAct = async () => {
             const db = app.firestore()
             const data = await db.collection("Events").where('Active','==', 1).get()
             setEvents(data.docs.map(doc => ({ Name: doc.data().Name, Start: doc.data().Start, End: doc.data().End, id: doc.id })))
         }
-        fetchCategory()
+        fetchEventsAct()
+    }, [])
+
+    useEffect(() => {
+        const fetchAdsAct = async () => {
+            const db = app.firestore()
+            const data = await db.collection("Ads").where('Active', '==', 1).get()
+            setAds(data.docs.map(doc => ({ Owner: doc.data().Proprietaire, Start: doc.data().Debut, End: doc.data().Fin, id: doc.id })))
+        }
+        fetchAdsAct()
     }, [])
 
     useEffect(() => {
@@ -35,6 +45,27 @@ export default function Overview() {
             )
         }
         fetchEvents()
+    }, [])
+
+    useEffect(() => {
+        const fetchAds = async () => {
+            const db = app.firestore()
+            const data = await db.collection("Ads").get()
+
+            let temp = []
+
+            data.docs.forEach(
+                doc => {
+                    if (new Date(doc.data().Fin.toDate()).getTime() > new Date().getTime()) {
+                        db.collection('Ads').doc(doc.id).update({ Active: 1 })
+                    }
+                    else {
+                        db.collection('Ads').doc(doc.id).update({ Active: 0 })
+                    }
+                }
+            )
+        }
+        fetchAds()
     }, [])
 
     let dayEventRange = {
@@ -94,6 +125,99 @@ export default function Overview() {
 
     //console.log(dayEventRange)
 
+    let monthAdRange = {
+        January: {
+            total: 0,
+            ads: []
+        },
+        Febuary: {
+            total: 0,
+            ads: []
+        },
+        March: {
+            total: 0,
+            ads: []
+        },
+        April: {
+            total: 0,
+            ads: []
+        },
+        May: {
+            total: 0,
+            ads: []
+        },
+        June: {
+            total: 0,
+            ads: []
+        },
+        July: {
+            total: 0,
+            ads: []
+        },
+        August: {
+            total: 0,
+            ads: []
+        },
+        September: {
+            total: 0,
+            ads: []
+        },
+        October: {
+            total: 0,
+            ads: []
+        },
+        November: {
+            total: 0,
+            ads: []
+        },
+        December: {
+            total: 0,
+            ads: []
+        },
+    }
+    ads.forEach(doc => {
+        if (doc.Start.toDate().getMonth() == 11) {
+            monthAdRange.December.ads.push(doc.Owner)
+            monthAdRange.December.total += 1
+        } else if (doc.Start.toDate().getMonth() == 0) {
+            monthAdRange.January.ads.push(doc.Owner)
+            monthAdRange.January.total += 1
+        } else if (doc.Start.toDate().getMonth() == 1) {
+            monthAdRange.Febuary.ads.push(doc.Owner)
+            monthAdRange.Febuary.total += 1
+        } else if (doc.Start.toDate().getMonth() == 2) {
+            monthAdRange.March.ads.push(doc.Owner)
+            monthAdRange.March.total += 1
+        } else if (doc.Start.toDate().getMonth() == 3) {
+            monthAdRange.April.ads.push(doc.Owner)
+            monthAdRange.April.total += 1
+        } else if (doc.Start.toDate().getMonth() == 4) {
+            monthAdRange.May.ads.push(doc.Owner)
+            monthAdRange.May.total += 1
+        } else if (doc.Start.toDate().getMonth() == 5) {
+            monthAdRange.June.ads.push(doc.Owner)
+            monthAdRange.June.total += 1
+        } else if (doc.Start.toDate().getMonth() == 6) {
+            monthAdRange.July.ads.push(doc.Owner)
+            monthAdRange.July.total += 1
+        } else if (doc.Start.toDate().getMonth() == 7) {
+            monthAdRange.August.ads.push(doc.Owner)
+            monthAdRange.August.total += 1
+        } else if (doc.Start.toDate().getMonth() == 8) {
+            monthAdRange.September.ads.push(doc.Owner)
+            monthAdRange.September.total += 1
+        } else if (doc.Start.toDate().getMonth() == 9) {
+            monthAdRange.October.ads.push(doc.Owner)
+            monthAdRange.October.total += 1
+        } else if (doc.Start.toDate().getMonth() == 10) {
+            monthAdRange.November.ads.push(doc.Owner)
+            monthAdRange.November.total += 1
+        }
+    });
+
+    console.log(ads)
+    console.log(monthAdRange)
+
     const user = {
         data: {
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -107,15 +231,15 @@ export default function Overview() {
         }
     }
 
-    const ads = {
+    const ad = {
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-            type: 'line',
+            labels: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             datasets: [{
-                data: [1, 18, 9, 17, 34, 22],
-                label: 'Dataset',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
+                data: [monthAdRange.January.total, monthAdRange.Febuary.total, monthAdRange.March.total, monthAdRange.April.total, monthAdRange.May.total, monthAdRange.June.total, monthAdRange.July.total, monthAdRange.August.total, monthAdRange.September.total, monthAdRange.October.total, monthAdRange.November.total, monthAdRange.December.total],
+                label: 'Ads',
+                backgroundColor: 'rgba(255,255,255,.55)',
+                borderWidth: "0",
+                borderColor: 'transparent',
             },]
         }
     }
@@ -126,7 +250,7 @@ export default function Overview() {
             type: 'line',
             datasets: [{
                 data: [dayEventRange.Monday.total, dayEventRange.Tuesday.total, dayEventRange.Wednesday.total, dayEventRange.Thursday.total, dayEventRange.Friday.total, dayEventRange.Saturday.total, dayEventRange.Sunday.total],
-                label: 'Dataset',
+                label: 'Events',
                 backgroundColor: 'transparent',
                 borderColor: 'rgba(255,255,255,.55)',
             },]
@@ -219,15 +343,15 @@ export default function Overview() {
                         <div className="overview__inner">
                             <div className="overview-box clearfix">
                                 <div className="icon">
-                                    <i className="zmdi zmdi-shopping-cart"></i>
+                                    <i className="zmdi zmdi-aspect-ratio"></i>
                                 </div>
                                 <div className="text">
-                                    <h2>388,688</h2>
-                                    <span>items solid</span>
+                                    <h2>{ads.length}</h2>
+                                    <span>Active Ads</span>
                                 </div>
                             </div>
                             <div className="overview-chart">
-                                <Line options={{
+                                <Bar options={{
                                     maintainAspectRatio: false,
                                     legend: {
                                         display: false
@@ -276,7 +400,7 @@ export default function Overview() {
                                             hoverRadius: 4
                                         }
                                     }
-                                }} data={ads.data} />
+                                }} data={ad.data} />
                             </div>
                         </div>
                     </div>

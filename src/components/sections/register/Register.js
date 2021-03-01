@@ -5,15 +5,23 @@ import { Form, Alert, Button } from "react-bootstrap"
 import { Link, useHistory } from 'react-router-dom'
 import logo from '../../../assets/images/icon/logo.png'
 
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
+import { isValidPhoneNumber } from 'react-phone-number-input'
+
+import app from '../../../firebase'
+
 export default function Register() {
 
         const emailRef = useRef()
         const nameRef = useRef()
         const passRef = useRef()
+        const phoneRef = useRef()
         const passConfirmRef = useRef()
-        const { signup } = useAuth()
+        const { signup, updatePhone } = useAuth()
         const [error, setError] = useState('')
         const [loading, setLoading] = useState(false)
+        const [phone, setPhone] = useState()
         const history = useHistory()
 
         async function handleSubmit(e) {
@@ -25,10 +33,32 @@ export default function Register() {
 
             try {
                 setError('')
-                setLoading(true)
-                await signup(emailRef.current.value, passRef.current.value)
-                
-                history.push("/")
+                if (isValidPhoneNumber(phone)) {
+                    setLoading(true)
+                    await signup(emailRef.current.value, passRef.current.value).then((userCredential) => {
+
+                        userCredential.user.sendEmailVerification()
+                            userCredential.user.updateProfile( {
+                                displayName: nameRef.current.value,
+                                phoneNumber: phone
+                            })
+
+                            //updatePhone(phone)
+                            const db = app.firestore()
+                            db.collection('Users').add({
+                                Name: nameRef.current.value,
+                                Phone: phone,
+                                Role: 'CUSTOMER',
+                                Email: userCredential.user.email,
+                                Active: 0
+                            })
+                            history.push("/")
+                    })
+                    
+                } else {
+                    setError('Phone number is not valid')
+                }
+ 
             } catch (error) {
                 if (error.code == "auth/email-already-in-use") {
                     setError('Email already in use')
@@ -37,7 +67,7 @@ export default function Register() {
                     setError('Password min-lenght : 6')
                 }
                 else {
-                    setError('Failed to log in')
+                    setError('Failed to register')
                 }
 
                 console.log(error)
@@ -57,11 +87,16 @@ export default function Register() {
                             </a>
                                 </div>
                         {error && <Alert variant="danger">{error}</Alert>}
+                        <div id="recaptcha-container"></div>
                         <div className="login-form">
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="name">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control className="au-input au-input--full" type="text" ref={nameRef} required />
+                                </Form.Group>
+                                <Form.Group id="tel">
+                                    <Form.Label>Phone</Form.Label>
+                                    <PhoneInput className="au-input au-input--full" placeholder="Enter phone number" ref={phoneRef} onChange={setPhone} value={phone} required />
                                 </Form.Group>
                                 <Form.Group id="email">
                                     <Form.Label>Email Address</Form.Label>

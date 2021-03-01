@@ -184,7 +184,7 @@ export default function Events() {
         setLoading(false)
     }
 
-    $('#update-events').on('shown.bs.modal', function (e) {
+    $('#update-events').unbind().on('shown.bs.modal', function (e) {
         e.preventDefault()
         const sc = catUpRef.current.value.split(",")
         let temp = []
@@ -194,6 +194,12 @@ export default function Events() {
         }
         setSelectedCategory(temp)
     })
+
+    async function handleCloseUpdateEvent(e) {
+        e.preventDefault()
+        $("#update-events").modal("hide")
+    }
+
         return (
             <AuthProvider>
                 <Fragment>
@@ -253,7 +259,7 @@ export default function Events() {
                             </Form>
                             </div>
                             <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">X</button>
+                            <button type="button" className="btn btn-secondary" onClick={ handleCloseUpdateEvent } data-dismiss="modal">X</button>
                             </div>
                         </div>
                         </div>
