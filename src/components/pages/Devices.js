@@ -89,7 +89,7 @@ export default function Devices() {
                         Nom: nameAddEtRef.current.value,
                         Address: adAddEtRef.current.value,
                         Nodes: temp,
-                        User: currentUser.id,
+                        User: currentUser.uid,
                     });
                     setInfoAddEt('Ets named ' + nameAddEtRef.current.value + ' Added')
                     setIsButtonAddEtDisabled(true)
@@ -156,7 +156,7 @@ export default function Devices() {
             db.collection('Nodes').add({
                 Nom: nameAddNodeRef.current.value,
                 Seuil: thAddNodeRef.current.value,
-                User: currentUser.id,
+                User: currentUser.uid,
             });
             setInfoAddNode('Node named ' + nameAddNodeRef.current.value + ' Added')
             setIsButtonAddNodeDisabled(true)

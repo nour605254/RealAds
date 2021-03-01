@@ -44,7 +44,7 @@ export default function Register() {
 
                             //updatePhone(phone)
                             const db = app.firestore()
-                            db.collection('Users').doc( userCredential.user.uid).set({
+                            db.collection('Users').doc(userCredential.user.uid).set({
                                 Name: nameRef.current.value,
                                 Phone: phone,
                                 Role: 'CUSTOMER',
