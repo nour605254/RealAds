@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
 
     function signup(email, pass, username, userlastName, numTel, role) {
         return auth.createUserWithEmailAndPassword(email, pass).then((resp) => {
-            return firestore.collection('users').doc(resp.user.uid).set({
+            return firestore.collection('Users').doc(resp.user.uid).set({
                 prenom: username,
                 nom: userlastName,
                 numtel: numTel,
