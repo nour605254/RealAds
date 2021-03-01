@@ -12,7 +12,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input'
 import app from '../../../firebase'
 
 export default function Register() {
-
+        const { currentUser } = useAuth()
         const emailRef = useRef()
         const nameRef = useRef()
         const passRef = useRef()
@@ -45,7 +45,7 @@ export default function Register() {
 
                             //updatePhone(phone)
                             const db = app.firestore()
-                            db.collection('Users').add({
+                            db.collection('Users').doc(currentUser.uid).set({
                                 Name: nameRef.current.value,
                                 Phone: phone,
                                 Role: 'CUSTOMER',
