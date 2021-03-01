@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import UpdateProfile from '../components/pages/UpdateProfile';
-import {auth} from "../firebase"
+import { auth } from "../firebase"
+import { firestore } from "../firebase"
 
 const AuthContext = React.createContext()
 
@@ -12,13 +13,21 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState()
     const [loading, setLoading] = useState(true)
 
-    function signup(email, password) {
-        return auth.createUserWithEmailAndPassword(email, password)
+    function signup(email, pass, username, userlastName, numTel, role) {
+        return auth.createUserWithEmailAndPassword(email, pass).then((resp) => {
+            return firestore.collection('users').doc(resp.user.uid).set({
+                prenom: username,
+                nom: userlastName,
+                numtel: numTel,
+                role: role,
+                email: email,
+            })
+        })
     }
 
     function login(email, password) {
         return auth.signInWithEmailAndPassword(email, password)
-    }   
+    }
 
     function logout() {
         return auth.signOut()
@@ -54,10 +63,10 @@ export function AuthProvider({ children }) {
         updateEmail,
         updatePassword,
     }
-        return (
+    return (
 
-            <AuthContext.Provider value={value}>
-            {!loading && children}
-            </AuthContext.Provider>
-        );
+        <
+        AuthContext.Provider value = { value } > {!loading && children } <
+        /AuthContext.Provider>
+    );
 }
