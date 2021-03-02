@@ -26,8 +26,8 @@ export default function Events() {
     useEffect(() => {
         const fetchEvent = async () => {
             const db = app.firestore()
-            //const data = await db.collection("Events").where('User', '==', currentUser.uid).get()
-            const data = await db.collection("Events").get()
+            const data = await db.collection("Events").where('User', '==', currentUser.uid).get()
+            //const data = await db.collection("Events").get()
 
             let temp = []
             
@@ -43,8 +43,8 @@ export default function Events() {
             )
             
             
-            //const doc = db.collection('Events').where('User', '==', currentUser.uid);
-            const doc = db.collection('Events');
+            const doc = db.collection('Events').where('User', '==', currentUser.uid);
+            //const doc = db.collection('Events');
             
             doc.onSnapshot(querySnapshot => {
                 querySnapshot.docChanges().forEach(change => {
