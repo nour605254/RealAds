@@ -50,8 +50,8 @@ export default function Login() {
                                         <img src={logo} alt="CoolAdmin" />
                             </a>
                         </div>
-                        {error && <Alert variant="danger">{error}</Alert>}
                         <div className="login-form">
+                            {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="email">
                                     <Form.Label>Email Address</Form.Label>

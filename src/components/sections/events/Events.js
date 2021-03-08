@@ -21,13 +21,13 @@ import { useAuth } from "../../../Contexts/AuthContext";
 export default function Events() {
     const { currentUser } = useAuth()
     const [events, setEvents] = useState([])
+    const [blocked, setBlocked] = useState(true)
     const categoryRef = useRef()
 
     useEffect(() => {
         const fetchEvent = async () => {
             const db = app.firestore()
-            const data = await db.collection("Events").where('User', '==', currentUser.uid).get()
-            //const data = await db.collection("Events").get()
+            const data = await db.collection("Events").get()
 
             let temp = []
             
@@ -42,10 +42,20 @@ export default function Events() {
                 }
             )
             
-            
-            const doc = db.collection('Events').where('User', '==', currentUser.uid);
-            //const doc = db.collection('Events');
-            
+            let doc = '';
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                docu => {
+                    if (docu.data().Role == 'CUSTOMER') {
+                        doc = db.collection('Events').where('User', '==', currentUser.uid);
+                        setBlocked(false)
+                    }
+                    else if (docu.data().Role == 'ADMIN') {
+                        doc = db.collection('Events');
+                        setBlocked(true)
+                    }
+                }
+            )
             doc.onSnapshot(querySnapshot => {
                 querySnapshot.docChanges().forEach(change => {
                     if (change.type === 'added') {
@@ -95,13 +105,25 @@ export default function Events() {
                 
             }, err => {
                 console.log(`Encountered error: ${err}`);
-            });          
+            });
             
-            //setEvents(data.docs.map(doc => ({id: doc.id, title: doc.data().Name, start: doc.data().Start.toDate(), end: doc.data().End.toDate(), category: doc.data().Category })))
         }
         fetchEvent()
     }, [])
 
+    let customButtons = ''
+
+    if (!blocked) {
+        customButtons = {
+            myCustomButton: {
+                text: 'Add Event',
+                click: function () {
+                    $("#add-events").modal("show");
+                    $(".modal-title").html("Add Events");
+                }
+            }
+        }
+    }
         return (
         <>
             <div className="row">
@@ -110,16 +132,8 @@ export default function Events() {
                         <div id="calendar">
                                 <FullCalendar
                                     plugins={[listPlugin, timeGridPlugin, interactionPlugin]}
-                                    timeZone={ 'UTC' }
-                                    customButtons= {{
-                                        myCustomButton: {
-                                            text: 'Add Event',
-                                            click: function() {
-                                                $("#add-events").modal("show");
-                                                $(".modal-title").html("Add Events");
-                                            }
-                                        }
-                                    }}
+                                    timeZone={'UTC'}
+                                    customButtons={customButtons}
                                     headerToolbar={{
                                         left: "today prev,next",
                                         center: "",
@@ -129,33 +143,39 @@ export default function Events() {
                                         left: "title",
                                         right: "timeGridWeek,timeGridDay"
                                     }}
-                                    editable={true}
+                                    editable={!blocked}
                                     eventResize={function (arg) {
-                                        $("#update-events").modal("show");
-                                        $(".modal-title").html("Update Events " + arg.event.id);
-                                        document.getElementById("nameInput").value = arg.event.title;
-                                        document.getElementById("catInput").value = arg.event.extendedProps.category;
-                                        document.getElementById("idInput").value = arg.event.id;
-                                        document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
-                                        document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        if (!blocked) {
+                                            $("#update-events").modal("show");
+                                            $(".modal-title").html("Update Events " + arg.event.id);
+                                            document.getElementById("nameInput").value = arg.event.title;
+                                            document.getElementById("catInput").value = arg.event.extendedProps.category;
+                                            document.getElementById("idInput").value = arg.event.id;
+                                            document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
+                                            document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        }
                                     }}
                                     eventDrop={function (arg) {
-                                        $("#update-events").modal("show");
-                                        $(".modal-title").html("Update Events " + arg.event.id);
-                                        document.getElementById("nameInput").value = arg.event.title;
-                                        document.getElementById("catInput").value = arg.event.extendedProps.category;
-                                        document.getElementById("idInput").value = arg.event.id;
-                                        document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
-                                        document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        if (!blocked) {
+                                            $("#update-events").modal("show");
+                                            $(".modal-title").html("Update Events " + arg.event.id);
+                                            document.getElementById("nameInput").value = arg.event.title;
+                                            document.getElementById("catInput").value = arg.event.extendedProps.category;
+                                            document.getElementById("idInput").value = arg.event.id;
+                                            document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
+                                            document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        }
                                     }}
                                     eventClick={function (arg) {
-                                        $("#update-events").modal("show");
-                                        $(".modal-title").html("Update Events " + arg.event.id);
-                                        document.getElementById("nameInput").value = arg.event.title;
-                                        document.getElementById("catInput").value = arg.event.extendedProps.category;
-                                        document.getElementById("idInput").value = arg.event.id;
-                                        document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
-                                        document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        if (!blocked) {
+                                            $("#update-events").modal("show");
+                                            $(".modal-title").html("Update Events " + arg.event.id);
+                                            document.getElementById("nameInput").value = arg.event.title;
+                                            document.getElementById("catInput").value = arg.event.extendedProps.category;
+                                            document.getElementById("idInput").value = arg.event.id;
+                                            document.getElementById("startInput").value = arg.event.start.toISOString().substring(0, arg.event.start.toISOString().length - 1);
+                                            document.getElementById("endInput").value = arg.event.end.toISOString().substring(0, arg.event.end.toISOString().length - 1);
+                                        }
                                     }}
                                     events={events}
                                 />

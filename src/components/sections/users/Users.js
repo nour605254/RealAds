@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-
+import { useAuth } from "../../../Contexts/AuthContext";
 import app from '../../../firebase'
 
 import $ from 'jquery'
@@ -7,6 +7,9 @@ import $ from 'jquery'
 import { Alert } from "react-bootstrap"
 
 export default function Users() {
+
+    const { currentUser } = useAuth()
+    const [blocked, setBlocked] = useState(true)
 
     const [users, setUsers] = useState([])
     const [active, setActive] = useState(0)
@@ -17,6 +20,24 @@ export default function Users() {
     const [error, setError] = useState('')
     const [info, setInfo] = useState('')
 
+    // fetch User Role Query
+    useEffect(() => {
+        const fetchCategory = async () => {
+            const db = app.firestore()
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                doc => {
+                    if (doc.data().Role == 'CUSTOMER') {
+                        setBlocked(false)
+                    }
+                    else if (doc.data().Role == 'ADMIN') {
+                        setBlocked(true)
+                    }
+                }
+            )
+        }
+        fetchCategory()
+    }, [])
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -83,7 +104,7 @@ export default function Users() {
                 });
                 // ...
                 if (a == 1) {
-                    setUsers((faces) => [...Users, ...temp])
+                    setUsers((faces) => [...users, ...temp])
                 } else {
                     setUsers((faces) => [...temp])
                 }
@@ -104,7 +125,7 @@ export default function Users() {
         setUsersLoading(true)
         const db = app.firestore()
 
-        const doc = db.collection('Visages').orderBy('Role', 'asc').startAfter(lastDocUsers).limit(3);
+        const doc = db.collection('Users').orderBy('Role', 'asc').startAfter(lastDocUsers).limit(3);
         updateUsersState(doc, 1)
 
     }
@@ -118,6 +139,7 @@ export default function Users() {
                 db.collection('Users').doc(user).update({ Role: role })
                 setInfo("User Up To Date")
                 setTimeout(() => setInfo(''), 5000);
+                setLastDocUsers([])
             
         } catch (error) {
 
@@ -128,7 +150,7 @@ export default function Users() {
 
     async function handleAction(user, e) {
         e.preventDefault()
-        const action = document.getElementById("action_id").value;
+        const action = e.target.value;
 
         if (action == 'activate') {
 
@@ -138,13 +160,11 @@ export default function Users() {
             handleUpdateAd(action, user)
         } 
 
-        console.log(action)
-        $("action_id").val("default");
     }
 
-   /* if (users.length == 0 ) {
-        return <h1>Loading ...</h1>
-    }*/
+    if (!blocked) {
+        return <h3 style={{ textAlign: 'center', color: 'red' }}>Sorry you do not have permision</h3>
+    }
 
     return (
 
@@ -189,7 +209,7 @@ export default function Users() {
                                     <td>
                                         <div class="rs-select2--trans rs-select2--sm">
                                                 <select class="js-select2" id="action_id" name="property" onChange={handleAction.bind(this, item.id)}>
-                                                <option value="default" selected="selected">Action</option>
+                                                <option value="default">Action</option>
                                                 <option value={ item.active }>{ item.active }</option>
                                                 <option value={ item.toggleTo }> set to { item.toggleTo }</option>
                                             </select>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useAuth } from "../../../Contexts/AuthContext";
 
 import app from '../../../firebase'
 import 'bootstrap/dist/js/bootstrap.min.js'
@@ -21,11 +22,44 @@ export default function Ads() {
     const [error, setError] = useState('')
     const [info, setInfo] = useState('')
 
+    const { currentUser } = useAuth()
+    const [blocked, setBlocked] = useState(true)
+
+    // fetch User Role Query
+    useEffect(() => {
+        const fetchCategory = async () => {
+            const db = app.firestore()
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                doc => {
+                    if (doc.data().Role == 'CUSTOMER') {
+                        setBlocked(false)
+                    }
+                    else if (doc.data().Role == 'ADMIN') {
+                        setBlocked(true)
+                    }
+                }
+            )
+        }
+        fetchCategory()
+    }, [])
+
     // fetch Ets Query
     useEffect(() => {
         const fetchEts = async () => {
             const db = app.firestore()
-            const doc = db.collection('Ets').orderBy('Nom', 'desc').limit(3);
+            let doc = ''
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                docu => {
+                    if (docu.data().Role == 'CUSTOMER') {
+                        doc = db.collection('Ets').where('User', '==', currentUser.uid).orderBy('Nom', 'desc').limit(3);
+                    }
+                    else if (docu.data().Role == 'ADMIN') {
+                        doc = db.collection('Ets').orderBy('Nom', 'desc').limit(3);
+                    }
+                }
+            )
             updateEtsState(doc)
         }
         fetchEts()
@@ -80,11 +114,22 @@ export default function Ads() {
 
     }
 
-    const fetchMoreEts = () => {
+    const fetchMoreEts = async () => {
         setEtsLoading(true)
         const db = app.firestore()
 
-        const doc = db.collection('Ets').orderBy('Nom', 'desc').startAfter(lastDocEts).limit(3);
+        let doc = ''
+        const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+        dataUser.docs.forEach(
+            docu => {
+                if (docu.data().Role == 'CUSTOMER') {
+                    doc = db.collection('Ets').where('User', '==', currentUser.uid).orderBy('Nom', 'desc').startAfter(lastDocEts).limit(3);
+                }
+                else if (docu.data().Role == 'ADMIN') {
+                    doc = db.collection('Ets').orderBy('Nom', 'desc').startAfter(lastDocEts).limit(3);
+                }
+            }
+        )
         updateEtsState(doc,1)
 
     }
@@ -152,8 +197,18 @@ export default function Ads() {
     useEffect(() => {
         const fetchNodes = async () => {
             const db = app.firestore()
-
-            const doc = db.collection('Nodes').orderBy('Nom', 'desc').limit(3);
+            let doc = ''
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                docu => {
+                    if (docu.data().Role == 'CUSTOMER') {
+                        doc = db.collection('Nodes').where('User', '==', currentUser.uid).orderBy('Nom', 'desc').limit(4);
+                    }
+                    else if (docu.data().Role == 'ADMIN') {
+                        doc = db.collection('Nodes').orderBy('Nom', 'desc').limit(4);
+                    }
+                }
+            )
             updateNodesState(doc)
         }
         fetchNodes()
@@ -207,11 +262,22 @@ export default function Ads() {
 
     }
 
-    const fetchMoreNodes = () => {
+    const fetchMoreNodes = async () => {
         setNodesLoading(true)
         const db = app.firestore()
 
-        const doc = db.collection('Nodes').orderBy('Nom', 'desc').startAfter(lastDocNodes).limit(3);
+        let doc = ''
+        const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+        dataUser.docs.forEach(
+            docu => {
+                if (docu.data().Role == 'CUSTOMER') {
+                    doc = db.collection('Nodes').where('User', '==', currentUser.uid).orderBy('Nom', 'desc').startAfter(lastDocNodes).limit(3);
+                }
+                else if (docu.data().Role == 'ADMIN') {
+                    doc = db.collection('Nodes').orderBy('Nom', 'desc').startAfter(lastDocNodes).limit(3);
+                }
+            }
+        )
         updateNodesState(doc,1)
 
     }
@@ -282,12 +348,14 @@ export default function Ads() {
                 <h3 className="title-5 m-b-35">Ets</h3>
                 <div className="table-data__tool">
                     <div className="table-data__tool-left"></div>
-                    <div className="table-data__tool-right">
-                            <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddEt}>
-                            <i className="zmdi zmdi-plus"></i>
-                        add Ets
-                    </button>
-                    </div>
+                    {!blocked &&
+                        <div className="table-data__tool-right">
+                                <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddEt}>
+                                <i className="zmdi zmdi-plus"></i>
+                            add Ets
+                        </button>
+                        </div>
+                    }
                 </div>
                 <div className="table-responsive table-responsive-data2">
                     <table className="table table-data2">
@@ -296,7 +364,9 @@ export default function Ads() {
                                 <th>Name</th>
                                 <th>Nodes</th>
                                 <th>Address</th>
-                                <th></th>
+                                {!blocked &&
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -308,16 +378,18 @@ export default function Ads() {
                                             <span className="block-email">{ item.nodes.join(' - ') }</span>
                                         </td>
                                         <td>{item.address}</td>
-                                        <td>
-                                            <div className="table-data-feature">
-                                                <button className="item" onClick={handleUpdateEt.bind(this, item.id, item.name, item.address, item.nodes)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i className="zmdi zmdi-edit"></i>
-                                                </button>
-                                                <button className="item" onClick={handleDeleteEt.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i className="zmdi zmdi-delete"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {!blocked &&
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" onClick={handleUpdateEt.bind(this, item.id, item.name, item.address, item.nodes)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i className="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleDeleteEt.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                                        <i className="zmdi zmdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr class="spacer"></tr>
                                 </>
@@ -338,12 +410,14 @@ export default function Ads() {
                 <h3 className="title-5 m-b-35">Nodes</h3>
                 <div className="table-data__tool">
                     <div className="table-data__tool-left"></div>
-                    <div className="table-data__tool-right">
-                        <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddNode}>
-                            <i className="zmdi zmdi-plus"></i>
-                    add node
-                </button>
-                    </div>
+                    {!blocked &&
+                        <div className="table-data__tool-right">
+                            <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddNode}>
+                                <i className="zmdi zmdi-plus"></i>
+                        add node
+                    </button>
+                        </div>
+                    }
                 </div>
                 <div className="table-responsive table-responsive-data2">
                     <table className="table table-data2">
@@ -351,7 +425,9 @@ export default function Ads() {
                             <tr>
                                 <th>Name</th>
                                 <th>Threshold</th>
-                                <th></th>
+                                {!blocked &&
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -360,16 +436,18 @@ export default function Ads() {
                                     <tr className="tr-shadow">
                                         <td>{ item.nom }</td>
                                         <td className="desc">{item.seuil}</td>
-                                        <td>
-                                            <div className="table-data-feature">
-                                                <button className="item" onClick={handleUpdateNode.bind(this, item.id, item.nom, item.seuil)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i className="zmdi zmdi-edit"></i>
-                                                </button>
-                                                <button className="item" onClick={handleDeleteNode.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i className="zmdi zmdi-delete"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {!blocked &&
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" onClick={handleUpdateNode.bind(this, item.id, item.nom, item.seuil)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i className="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleDeleteNode.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                                        <i className="zmdi zmdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr class="spacer"></tr>
                                 </>

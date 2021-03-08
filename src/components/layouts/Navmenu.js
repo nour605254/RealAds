@@ -1,9 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from "../../Contexts/AuthContext";
 import { Link, useHistory } from 'react-router-dom';
 import logo from '../../assets/images/icon/logo.png';
 
+import app from '../../firebase'
+
 export default function Navmenu() {
+
+    const { currentUser } = useAuth()
+    const [blocked, setBlocked] = useState(true)
+
+    // fetch User Role Query
+    useEffect(() => {
+        const fetchCategory = async () => {
+            const db = app.firestore()
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                doc => {
+                    if (doc.data().Role == 'CUSTOMER') {
+                        setBlocked(false)
+                    }
+                    else if (doc.data().Role == 'ADMIN') {
+                        setBlocked(true)
+                    }
+                }
+            )
+        }
+        fetchCategory()
+    }, [])
 
     return (
         <aside className="menu-sidebar d-none d-lg-block">
@@ -27,10 +51,12 @@ export default function Navmenu() {
                             <Link to="/ads">
                                 <i className="fas fa-chart-bar"></i>Ads</Link>
                         </li>
-                        <li>
-                            <Link to="/users">
-                                <i className="fas fa-table"></i>Users</Link>
-                        </li>
+                        {blocked &&
+                            <li>
+                                <Link to="/users">
+                                    <i className="fas fa-table"></i>Users</Link>
+                            </li>
+                        }
                         <li>
                             <Link to="/devices">
                                 <i className="far fa-check-square"></i>Devices</Link>

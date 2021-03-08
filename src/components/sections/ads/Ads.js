@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useAuth } from "../../../Contexts/AuthContext";
 
 import app from '../../../firebase'
 import 'bootstrap/dist/js/bootstrap.min.js'
@@ -7,6 +8,9 @@ import $ from 'jquery';
 import Swal from 'sweetalert2'
 
 export default function Ads() {
+
+    const { currentUser } = useAuth()
+    const [blocked, setBlocked] = useState(true)
 
     const [ads, setAds] = useState([])
     const [lastDocAds, setLastDocAds] = useState([])
@@ -25,6 +29,25 @@ export default function Ads() {
 
     const [error, setError] = useState('')
     const [info, setInfo] = useState('')
+
+    // fetch User Role Query
+    useEffect(() => {
+        const fetchCategory = async () => {
+            const db = app.firestore()
+            const dataUser = await db.collection("Users").where('Email', '==', currentUser.email).get()
+            dataUser.docs.forEach(
+                doc => {
+                    if (doc.data().Role == 'CUSTOMER') {
+                        setBlocked(false)
+                    }
+                    else if (doc.data().Role == 'ADMIN') {
+                        setBlocked(true)
+                    }
+                }
+            )
+        }
+        fetchCategory()
+    }, [])
 
     // fetch Categories Query
     useEffect(() => {
@@ -474,12 +497,15 @@ export default function Ads() {
                 <h3 className="title-5 m-b-35">Advertising</h3>
                 <div className="table-data__tool">
                     <div className="table-data__tool-left"></div>
-                    <div className="table-data__tool-right">
-                            <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddAd}>
-                            <i className="zmdi zmdi-plus"></i>
-                            add ad
-                        </button>
-                    </div>
+                    {blocked && 
+                        <div className="table-data__tool-right">
+                                <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddAd}>
+                                <i className="zmdi zmdi-plus"></i>
+                                add ad
+                            </button>
+                        </div>
+                    }
+
                 </div>
                 <div className="table-responsive table-responsive-data2">
                     <table className="table table-data2">
@@ -492,8 +518,13 @@ export default function Ads() {
                                 <th>Touched</th>
                                 <th>Views</th>
                                 <th>Categories</th>
-                                <th>Ad url</th>
-                                <th></th>
+                                {blocked && 
+                                    <>
+                                        <th>Ad url</th>
+                                        <th></th>
+                                    </>
+                                }
+
                             </tr>
                         </thead>
                         <tbody>
@@ -516,26 +547,30 @@ export default function Ads() {
                                     <td>
                                         <span className="block-email">{ item.category.join(' - ') }</span>
                                     </td>
-                                    <td>
-                                        <div className="table-data-feature">
-                                                <button className="item" data-toggle="tooltip" data-placement="top" title="Show Ads" onClick={handleShowAd.bind(this, item.url)}>
-                                                <i className="zmdi zmdi-link"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="table-data-feature">
-                                                <button className="item" onClick={handleUpdateAd.bind(this, item.id, item.owner, item.start, item.end, item.category)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                            <i className="zmdi zmdi-edit"></i>
-                                            </button>
-                                            <button className="item" onClick={handleSetUrlAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Set Ad File">
-                                                <i className="zmdi zmdi-collection-folder-image"></i>
-                                            </button>
-                                            <button className="item" onClick={handleDeleteAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                            <i className="zmdi zmdi-delete"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                    {blocked &&
+                                        <>
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" data-toggle="tooltip" data-placement="top" title="Show Ads" onClick={handleShowAd.bind(this, item.url)}>
+                                                        <i className="zmdi zmdi-link"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" onClick={handleUpdateAd.bind(this, item.id, item.owner, item.start, item.end, item.category)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i className="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleSetUrlAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Set Ad File">
+                                                        <i className="zmdi zmdi-collection-folder-image"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleDeleteAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                                        <i className="zmdi zmdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </>
+                                    }
                                 </tr>
                                 <tr class="spacer"></tr>
                                 </>
@@ -556,12 +591,14 @@ export default function Ads() {
                 <h3 className="title-5 m-b-35">Categories</h3>
                 <div className="table-data__tool">
                     <div className="table-data__tool-left"></div>
-                    <div className="table-data__tool-right">
-                            <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddCat}>
-                            <i className="zmdi zmdi-plus"></i>
-                        add category
-                    </button>
-                    </div>
+                    {blocked &&
+                        <div className="table-data__tool-right">
+                                <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddCat}>
+                                <i className="zmdi zmdi-plus"></i>
+                            add category
+                        </button>
+                        </div>
+                    }
                 </div>
                 <div className="table-responsive table-responsive-data2">
                     <table className="table table-data2">
@@ -569,7 +606,9 @@ export default function Ads() {
                             <tr>
                                 <th>Name</th>
                                 <th>Faces</th>
-                                <th></th>
+                                {blocked && 
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -580,16 +619,19 @@ export default function Ads() {
                                         <td>
                                             <span className="block-email">{ item.faces.join(' - ') }</span>
                                         </td>
-                                        <td>
-                                            <div className="table-data-feature">
-                                                <button className="item" onClick={handleUpdateCat.bind(this, item.id, item.name, item.faces)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i className="zmdi zmdi-edit"></i>
-                                                </button>
-                                                <button className="item" onClick={handleDeleteCat.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i className="zmdi zmdi-delete"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {blocked &&
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" onClick={handleUpdateCat.bind(this, item.id, item.name, item.faces)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i className="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleDeleteCat.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                                        <i className="zmdi zmdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        }
+
                                     </tr>
                                     <tr class="spacer"></tr>
                                 </>
@@ -610,12 +652,14 @@ export default function Ads() {
                 <h3 className="title-5 m-b-35">Faces</h3>
                 <div className="table-data__tool">
                     <div className="table-data__tool-left"></div>
-                    <div className="table-data__tool-right">
-                        <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddFace}>
-                            <i className="zmdi zmdi-plus"></i>
-                    add face
-                </button>
-                    </div>
+                    {blocked &&
+                        <div className="table-data__tool-right">
+                            <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={handleAddFace}>
+                                <i className="zmdi zmdi-plus"></i>
+                                add face
+                            </button>
+                        </div>
+                    }
                 </div>
                 <div className="table-responsive table-responsive-data2">
                     <table className="table table-data2">
@@ -624,7 +668,9 @@ export default function Ads() {
                                 <th>Name</th>
                                 <th>Age</th>
                                 <th>Gender</th>
-                                <th></th>
+                                {blocked &&
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -636,16 +682,18 @@ export default function Ads() {
                                             <span className="block-email">{ item.age.join(' - ') }</span>
                                         </td>
                                         <td className="desc">{item.sexe}</td>
-                                        <td>
-                                            <div className="table-data-feature">
-                                                <button className="item" onClick={handleUpdateFace.bind(this, item.id, item.nom, item.sexe, item.age)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i className="zmdi zmdi-edit"></i>
-                                                </button>
-                                                <button className="item" onClick={handleDeleteFace.bind(this, item.id, item.nom, item.age, item.sexe)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i className="zmdi zmdi-delete"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {blocked &&
+                                            <td>
+                                                <div className="table-data-feature">
+                                                    <button className="item" onClick={handleUpdateFace.bind(this, item.id, item.nom, item.sexe, item.age)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i className="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                    <button className="item" onClick={handleDeleteFace.bind(this, item.id, item.nom, item.age, item.sexe)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                                        <i className="zmdi zmdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr class="spacer"></tr>
                                 </>

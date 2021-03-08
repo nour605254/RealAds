@@ -1,17 +1,14 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert } from "react-bootstrap";
 import { useAuth } from "../../Contexts/AuthContext";
 
 import profile from '../../assets/images/icon/avatar-06.jpg';
-import app from '../../firebase'
 
 
 export default function Header() {  
     const [error, setError] = useState("")
     const { currentUser } = useAuth()
-
-    //console.log(currentUser)
 
     return (
 
