@@ -549,30 +549,26 @@ export default function Ads() {
                                     <td>
                                         <span className="block-email">{ item.category.join(' - ') }</span>
                                     </td>
-                                    {blocked &&
-                                        <>
-                                            <td>
-                                                <div className="table-data-feature">
-                                                    <button className="item" data-toggle="tooltip" data-placement="top" title="Show Ads" onClick={handleShowAd.bind(this, item.url)}>
-                                                        <i className="zmdi zmdi-collection-folder-image"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="table-data-feature">
-                                                    <button className="item" onClick={handleUpdateAd.bind(this, item.id, item.owner, item.start, item.end, item.category)} data-toggle="tooltip" data-placement="top" title="Edit">
-                                                        <i className="zmdi zmdi-edit"></i>
-                                                    </button>
-                                                    <button className="item" onClick={handleSetUrlAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Set Ad File">
-                                                        <i className="zmdi zmdi-link"></i>
-                                                    </button>
-                                                    <button className="item" onClick={handleDeleteAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
-                                                        <i className="zmdi zmdi-delete"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    }
+                                    <td>
+                                        <div className="table-data-feature">
+                                                <button className="item" data-toggle="tooltip" data-placement="top" title="Set Ad File" onClick={handleSetUrlAd.bind(this, item.id)}>
+                                                <i className="zmdi zmdi-link"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="table-data-feature">
+                                                <button className="item" onClick={handleUpdateAd.bind(this, item.id, item.owner, item.start, item.end, item.category)} data-toggle="tooltip" data-placement="top" title="Edit">
+                                            <i className="zmdi zmdi-edit"></i>
+                                            </button>
+                                                <button className="item" onClick={handleShowAd.bind(this, item.url)} data-toggle="tooltip" data-placement="top" title="Show Ads">
+                                                <i className="zmdi zmdi-collection-folder-image"></i>
+                                            </button>
+                                            <button className="item" onClick={handleDeleteAd.bind(this, item.id)} data-toggle="tooltip" data-placement="top" title="Delete">
+                                            <i className="zmdi zmdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr class="spacer"></tr>
                                 </>
