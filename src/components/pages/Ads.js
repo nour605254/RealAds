@@ -99,6 +99,8 @@ export default function Ads() {
 
     const [errorUpdateFace, setErrorUpdateFace] = useState('')
     const [infoUpdateFace, setInfoUpdateFace] = useState('')
+    const [i, setI] = useState(0)
+    
 
 
 
@@ -182,6 +184,7 @@ export default function Ads() {
 
     async function handleAddAdUrl(e) {
         e.preventDefault()
+        
         let id = ''
         try {
 
@@ -209,50 +212,60 @@ export default function Ads() {
             }
 
             console.log(getDuration())
-            if (document.getElementById('urlAddAdInput').files[0].type.split('/').pop() == "mp4") {
-                if (getDuration() <= 60) {
-                    const urlAdsRef = storageRef.child(child);
-                    let uploadTask = urlAdsRef.put(document.getElementById('urlAddAdInput').files[0])                
-                    uploadTask.on('state_changed',
-                        (snapshot) => {
-                            // Observe state change events such as progress, pause, and resume
-                            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                            setIsButtonAddAdUrlDisabled(true)
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            setInfoAddAdUrl('Upload is ' + progress.toFixed(0) + '% done')
-                            //console.log('Upload is ' + progress + '% done');
-                        },
-                        (error) => {
-                            // Handle unsuccessful uploads
-                            setErrorAddAdUrl('The video was not sent, please try again')
-                            setTimeout(() => setErrorAddAdUrl(''), 5000);
-                        },
-                        () => {
-                            const db = app.firestore()
-                            id = idAddAdUrlRef.current.value
-                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                db.collection('Ads').doc(id).update({ url_fichier: downloadURL })
-                            });
-                            
-                            setInfoAddAdUrl('Advertising Url of Ad Id' + idAddAdUrlRef.current.value + ' Added')                       
-                            setTimeout(() => setIsButtonAddAdUrlDisabled(false), 5000);
-                            setTimeout(() => setInfoAddAdUrl(''), 5000);
-                            document.getElementById("add-ad-url-form").reset();
-    
-                            document.getElementById("idAddAdUrlInput").value = id
-                        }
-                    );
-                    
+
+                if (document.getElementById('urlAddAdInput').files[0].type.split('/').pop() == "mp4") {
+                    if (getDuration() <= 60) {
+                        const urlAdsRef = storageRef.child(child);
+                        let uploadTask = urlAdsRef.put(document.getElementById('urlAddAdInput').files[0])
+                        //setInfoAddAdUrl('the video under 60 seconds')
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                // Observe state change events such as progress, pause, and resume
+                                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                                setIsButtonAddAdUrlDisabled(true)
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                setInfoAddAdUrl('Upload is ' + progress.toFixed(0) + '% done')
+                                
+                                //console.log('Upload is ' + progress + '% done');
+                            },
+                            (error) => {
+                                // Handle unsuccessful uploads
+                                setErrorAddAdUrl('The video was not sent, please try again')
+                                setTimeout(() => setErrorAddAdUrl(''), 5000);
+                            },
+                            () => {
+                                const db = app.firestore()
+                                id = idAddAdUrlRef.current.value
+                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                    db.collection('Ads').doc(id).update({ url_fichier: downloadURL })
+                                });
+                                
+                                setInfoAddAdUrl('Advertising Url of Ad Id' + idAddAdUrlRef.current.value + ' Added')                       
+                                setTimeout(() => setIsButtonAddAdUrlDisabled(false), 5000);
+                                setTimeout(() => setInfoAddAdUrl(''), 5000);
+                                document.getElementById("add-ad-url-form").reset();
+                                document.querySelector('#button-url-ad').innerHTML = 'Set Advertising url';
+                                document.getElementById("idAddAdUrlInput").value = id
+                            }
+                        );
+
+                    }
+                    else if (!getDuration()) {
+                        setInfoAddAdUrl('Video saved click again to upload')
+                        setTimeout(() => setInfoAddAdUrl(''), 5000);
+                        document.querySelector('#button-url-ad').innerHTML = 'Upload Video';
+                    } else {
+                        setErrorAddAdUrl('the video must not exceed 60 seconds')
+                        setTimeout(() => setErrorAddAdUrl(''), 5000);
+                        document.querySelector('#button-url-ad').innerHTML = 'Set New Video';
+                    }
                 }
                 else {
-                    setErrorAddAdUrl('the video must not exceed 60 seconds')
+                    setErrorAddAdUrl('Video extention must be .mp4')
                     setTimeout(() => setErrorAddAdUrl(''), 5000);
                 }
-            }
-            else {
-                setErrorAddAdUrl('Video extention must be .mp4')
-                setTimeout(() => setErrorAddAdUrl(''), 5000);
-                }
+            
+            
 
         } catch (error) {
 
@@ -617,7 +630,7 @@ export default function Ads() {
                                             <Form.Label>Url</Form.Label>
                                             <Form.Control className="au-input au-input--full" id="urlAddAdInput" type="file" accept="video/*" ref={urlAddAdRef} required />
                                         </Form.Group>
-                                        <Button className="au-btn au-btn--block au-btn--blue m-b-20" type="submit" disabled={isButtonAddAdUrlDisabled}>Set Advertising url</Button>
+                                        <Button id="button-url-ad" className="au-btn au-btn--block au-btn--blue m-b-20" type="submit" disabled={isButtonAddAdUrlDisabled}>Set Advertising url</Button>
                                     </Form>
                                 </div>
                                 <div className="modal-footer">

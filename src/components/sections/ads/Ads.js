@@ -470,6 +470,8 @@ export default function Ads() {
     async function handleSetUrlAd(id, e) {
         e.preventDefault()
         $("#add-ad-url").modal("show");
+        document.querySelector('#button-url-ad').innerHTML = 'Set Advertising url';
+        document.getElementById("add-ad-url-form").reset();
         document.getElementById("idAddAdUrlInput").value = id
     }
     async function handleShowAd(url, e) {
